@@ -8,7 +8,7 @@ class Invader {
     const image = new Image()
     image.src = './img/invader.png'
     image.onload = () => {
-      const scale = 1
+      const scale = 0.05
       this.image = image
       this.width = image.width * scale
       this.height = image.height * scale
@@ -20,8 +20,6 @@ class Invader {
   }
 
   draw() {
-    // c.fillStyle = 'red'
-    // c.fillRect(this.position.x, this.position.y, this.width, this.height)
 
     c.drawImage(
       this.image,
