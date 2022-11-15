@@ -26,6 +26,7 @@
     <span>Score:</span> <span id="scoreEl">0</span>
   </p>
   <canvas></canvas>
+  <!-- Start screen -->
   <!-- background container -->
   <div
     id="startScreen"
@@ -35,7 +36,6 @@
       right: 0;
       bottom: 0;
       left: 0;
-      background: url('./img/startScreenBackground.png');
       z-index: 20;
       background-size: contain;
       background-repeat: no-repeat;
@@ -64,6 +64,9 @@
           >Start</span
         >
       </div>
+        <input type="text" id="nameStart" required
+               minlength="4" maxlength="8" size="10">
+      </div>
     </div>
   </div>
   <!-- restart screen -->
@@ -76,7 +79,6 @@
       right: 0;
       bottom: 0;
       left: 0;
-      background: url('./img/startScreenBackground.png');
       z-index: 20;
       background-size: contain;
       background-repeat: no-repeat;

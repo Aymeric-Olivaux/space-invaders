@@ -1,9 +1,10 @@
 const scoreEl = document.querySelector('#scoreEl')
+const nameStart = document.querySelector('#nameStart')
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 
-canvas.width = 1024
-canvas.height = 576
+canvas.width = window.innerWidth
+canvas.height = window.innerHeight
 
 let player = new Player()
 let projectiles = []
@@ -14,10 +15,10 @@ let bombs = []
 let powerUps = []
 
 let keys = {
-  a: {
+  arrowleft: {
     pressed: false
   },
-  d: {
+  arrowright: {
     pressed: false
   },
   space: {
@@ -29,7 +30,7 @@ let frames = 0
 let randomInterval = Math.floor(Math.random() * 500 + 500)
 let game = {
   over: false,
-  active: true
+  active: false
 }
 let score = 0
 
@@ -37,6 +38,9 @@ let spawnBuffer = 500
 let fps = 60
 let fpsInterval = 1000 / fps
 let msPrev = window.performance.now()
+
+getData('http://127.0.0.1:8000')
+
 
 function init() {
   player = new Player()
@@ -48,10 +52,10 @@ function init() {
   powerUps = []
 
   keys = {
-    a: {
+    arrowleft: {
       pressed: false
     },
-    d: {
+    arrowright: {
       pressed: false
     },
     space: {
@@ -100,6 +104,9 @@ function endGame() {
   // stops game altogether
   setTimeout(() => {
     game.active = false
+    console.log(nameStart.value)
+    postData('http://127.0.0.1:8000', { name: nameStart.value, score: score })
+
     document.querySelector('#restartScreen').style.display = 'flex'
     document.querySelector('#finalScore').innerHTML = score
   }, 2000)
@@ -381,11 +388,11 @@ function animate() {
     } // end looping over grid.invaders
   })
 
-  if (keys.a.pressed && player.position.x >= 0) {
+  if (keys.arrowleft.pressed && player.position.x >= 0) {
     player.velocity.x = -7
     player.rotation = -0.15
   } else if (
-    keys.d.pressed &&
+    keys.arrowright.pressed &&
     player.position.x + player.width <= canvas.width
   ) {
     player.velocity.x = 7
@@ -447,14 +454,14 @@ document.querySelector('#restartButton').addEventListener('click', () => {
 })
 
 addEventListener('keydown', ({ key }) => {
-  if (game.over) return
+  if (!game.active) return
 
   switch (key) {
-    case 'a':
-      keys.a.pressed = true
+    case 'ArrowLeft':
+      keys.arrowleft.pressed = true
       break
-    case 'd':
-      keys.d.pressed = true
+    case 'ArrowRight':
+      keys.arrowright.pressed = true
       break
     case ' ':
       keys.space.pressed = true
@@ -481,11 +488,11 @@ addEventListener('keydown', ({ key }) => {
 
 addEventListener('keyup', ({ key }) => {
   switch (key) {
-    case 'a':
-      keys.a.pressed = false
+    case 'ArrowLeft':
+      keys.arrowleft.pressed = false
       break
-    case 'd':
-      keys.d.pressed = false
+    case 'ArrowRight':
+      keys.arrowright.pressed = false
       break
     case ' ':
       keys.space.pressed = false
@@ -493,3 +500,36 @@ addEventListener('keyup', ({ key }) => {
       break
   }
 })
+
+async function postData(url = '', data = {}) {
+  // Default options are marked with *
+  const response = await fetch(url, {
+    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+    mode: 'no-cors', // no-cors, *cors, same-origin
+    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+    headers: {
+      'Content-Type': 'application/json'
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    redirect: 'follow', // manual, *follow, error
+    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+    body: JSON.stringify(data) // body data type must match "Content-Type" header
+  })
+  return response.json() // parses JSON response into native JavaScript objects
+}
+
+async function getData(url = '', data = {}) {
+  // Default options are marked with *
+  const response = await fetch(url, {
+    method: 'GET', // *GET, POST, PUT, DELETE, etc.
+    mode: 'no-cors', // no-cors, *cors, same-origin
+    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+    redirect: 'follow', // manual, *follow, error
+    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+
+  })
+  return response.json() // parses JSON response into native JavaScript objects
+}
+
